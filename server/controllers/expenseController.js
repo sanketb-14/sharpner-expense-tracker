@@ -8,53 +8,61 @@ exports.getAllExpenses = async (req, res) => {
             data: expenses,
         });
     } catch (error) {
+        console.error('Error fetching expenses:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Failed to fetch expenses',
-            error: error.message,
+            message: 'Error fetching expenses',
         });
     }
 };
 
 
-exports.createExpense = async (req, res) => {
-    const { description, amount } = req.body;
+exports.addExpense = async (req, res) => {
+    const { title, amount } = req.body;
+
     try {
-        const newExpense = await Expense.create({ description, amount });
+        const newExpense = await Expense.create({
+            title,
+            amount,
+        });
         res.status(201).json({
             status: 'success',
             data: newExpense,
         });
     } catch (error) {
+        console.error('Error adding expense:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Failed to create expense',
-            error: error.message,
+            message: 'Error adding expense',
         });
     }
 };
 
-
 exports.deleteExpense = async (req, res) => {
-    const expenseId = req.params.id;
+    const { expenseId } = req.params;
+
     try {
-        const expense = await Expense.findByPk(expenseId);
-        if (!expense) {
-            return res.status(404).json({
+        const deletedExpense = await Expense.destroy({
+            where: {
+                id: expenseId,
+            },
+        });
+        if (deletedExpense) {
+            res.status(200).json({
+                status: 'success',
+                message: 'Expense deleted successfully',
+            });
+        } else {
+            res.status(404).json({
                 status: 'error',
                 message: 'Expense not found',
             });
         }
-        await expense.destroy();
-        res.status(200).json({
-            status: 'success',
-            message: 'Expense deleted successfully',
-        });
     } catch (error) {
+        console.error('Error deleting expense:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Failed to delete expense',
-            error: error.message,
+            message: 'Error deleting expense',
         });
     }
 };

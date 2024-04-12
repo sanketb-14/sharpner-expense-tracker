@@ -1,6 +1,7 @@
 const express = require('express')
 const sequelize = require('./util/database')
 const expenseRoute = require('./routes/expenseRoutes')
+const userRoute = require('./routes/userRoutes')
 
 const cors = require('cors')
 
@@ -8,7 +9,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-app.use('/api/v1/expenses', expenseRoute)
+
 sequelize
     .sync()
     .then(() => {
@@ -17,6 +18,8 @@ sequelize
     .catch((error) => {
         console.log('Database sync error:', error);
     });
+app.use('/api/v1/expenses', expenseRoute)    
+app.use('/api/v1/users' , userRoute)
 
 
 
